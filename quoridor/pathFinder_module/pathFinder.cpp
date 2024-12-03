@@ -162,8 +162,14 @@ void printParent(int * parent) {
 
 bitset<128> find_path_and_non_blocking_walls(int x, int y, int x_target, int wall, int* block_) {
 	bitset<128> non_blocking_walls;	// res will be stored here
-	int block[selfn][selfn];
-	copy(block_, block_+(selfn*selfn), &block[0][0]);
+//	int block[selfn][selfn];
+//	copy(block_, block_+(selfn*selfn), &block[0][0]);
+
+    std::vector<std::vector<int>> block(selfn, std::vector<int>(selfn, 0));
+
+    // Copy data from the input block
+    std::copy(block_, block_ + (selfn * selfn), &block[0][0]);
+//    std::copy(block_.begin(), block_.end(), block.begin());
 
 	// place the wall at the block
 	int wx = 0, wy = 0;
@@ -179,12 +185,15 @@ bitset<128> find_path_and_non_blocking_walls(int x, int y, int x_target, int wal
 	block[wx][wy] = 1;
 	// ============================
 
-	int parent[selfn][selfn][2] = {};
+//	int parent[selfn][selfn][2] = {};
+    std::vector<std::vector<std::vector<int>>> parent(selfn, std::vector<std::vector<int>>(selfn, std::vector<int>(2, -1)));
 	parent[x][y][0] = -1;
 	parent[x][y][1] = -1;
 
 	queue <pair<int,int> > next;
-	int visited[selfn][selfn] = {};
+//	int visited[selfn][selfn] = {};
+    std::vector<std::vector<int>> visited(selfn, std::vector<int>(selfn, 0));
+
 	add_next_visits(next, x, y, x_target, &block[0][0], &visited[0][0], &parent[0][0][0]);
 	while (!next.empty()) {
 		pair<int, int> tmp = next.front(); next.pop();
@@ -193,8 +202,6 @@ bitset<128> find_path_and_non_blocking_walls(int x, int y, int x_target, int wal
 
 		add_next_visits(next, tmp.first, tmp.second, x_target, &block[0][0], &visited[0][0], &parent[0][0][0]);
 	}
-
-	return non_blocking_walls;
 }
 
 PyObject* bitset_to_pylist(bitset<128> data) {
@@ -205,7 +212,7 @@ PyObject* bitset_to_pylist(bitset<128> data) {
 	 throw logic_error("Unable to allocate memory for Python list");
 	}
 	for (int i = 0; i < num_walls ; ++i) {
-		PyObject *num = PyInt_FromLong(data[i]);
+		PyObject *num = PyLong_FromLong(data[i]);
 		if (!num) {
 			cout << "ERROR DUO" << endl;
 			Py_DECREF(listObj);
@@ -232,7 +239,8 @@ static PyObject* legalWalls(PyObject* self, PyObject* args)
 	//get buffer info
 	if (PyObject_GetBuffer(buffobj, &view, PyBUF_ANY_CONTIGUOUS | PyBUF_FORMAT) == -1) return NULL;
 
-	int block[selfn][selfn] = {};
+//	int block[selfn][selfn] = {};
+    std::vector<std::vector<int>> block(selfn, std::vector<int>(selfn, 0));
 	int x = 0, y = 0, x_ = 0, y_ = 0;
 
 	char *pointer = (char*)view.buf;
@@ -283,9 +291,22 @@ static PyMethodDef myMethods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
-PyMODINIT_FUNC initpathFinder(void)
+//PyMODINIT_FUNC initpathFinder(void)
+//{
+//	PyObject *m = Py_InitModule3("pathFinder", myMethods, "...");
+//	if (m == NULL)
+//		return;
+//}
+static struct PyModuleDef pathFinderModule = {
+    PyModuleDef_HEAD_INIT,
+    "pathFinder",  // Module name
+    "Python C++ Module for Path Finding",  // Documentation
+    -1,            // Size of per-interpreter state of the module
+    myMethods      // Methods table
+};
+
+PyMODINIT_FUNC PyInit_pathFinder(void)
 {
-	PyObject *m = Py_InitModule3("pathFinder", myMethods, "...");
-	if (m == NULL)
-		return;
+    return PyModule_Create(&pathFinderModule);
 }
+

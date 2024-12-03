@@ -1,7 +1,8 @@
 from collections import deque
 import numpy as np
 import time
-import pathFinder
+import quoridor.pathFinder_module.pathFinder
+
 
 def is_wall_legal(moves):
     if moves == None: return 0

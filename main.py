@@ -56,6 +56,8 @@
 # if __name__ == "__main__":
 #     main()
 
+import sys
+print(sys.path)
 
 from Coach import Coach
 from quoridor.QuoridorGame import QuoridorGame as Game
