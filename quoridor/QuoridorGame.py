@@ -100,7 +100,7 @@ class QuoridorGame(Game):
         return np.array(pieces)
 
     def stringRepresentation(self, board):
-        return board.tostring()
+        return board.tobytes()
 
 # =======
 # display

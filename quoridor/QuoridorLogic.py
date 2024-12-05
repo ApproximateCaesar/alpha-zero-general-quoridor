@@ -12,11 +12,11 @@ def is_wall_legal(moves):
     return moves[0].is_wall_legal(moves[1:])
 
 
-class Board():
+class Board:
 
     def __init__(self, n):
         "Set up initial board configuration."
-        self.n = n * 2 - 1
+        self.n = n * 2 - 1  # board size is self.n x self.n
         self.n_ = n - 1
         # Create the empty board array.
         self.pieces = np.zeros((4, self.n, self.n), dtype='uint8')
@@ -36,50 +36,50 @@ class Board():
 
         # up
         if x > 0 and not block[x - 1][y]:
-            if (x - 2 == x_ and y == y_):  # other player is blocking
-                if (x - 4 >= 0 and not block[x - 3][y]):
+            if x - 2 == x_ and y == y_:  # other player is blocking
+                if x - 4 >= 0 and not block[x - 3][y]:
                     moves[0] = 1  # jump over
                 else:
-                    if (y + 2 <= self.n - 1 and not block[x_][y_ + 1]):
+                    if y + 2 <= self.n - 1 and not block[x_][y_ + 1]:
                         moves[7] = 1  # diagonal
-                    if (y - 2 >= 0 and not block[x_][y_ - 1]):
+                    if y - 2 >= 0 and not block[x_][y_ - 1]:
                         moves[4] = 1  # diagonal
             else:
                 moves[0] = 1  # normal 1 step
 
         # down
-        if (x < self.n - 1 and not block[x + 1][y]):
-            if (x + 2 == x_ and y == y_):
-                if (x + 4 <= self.n - 1 and not block[x + 3][y]):
+        if x < self.n - 1 and not block[x + 1][y]:
+            if x + 2 == x_ and y == y_:
+                if x + 4 <= self.n - 1 and not block[x + 3][y]:
                     moves[1] = 1
                 else:
-                    if (y + 2 <= self.n - 1 and not block[x_][y_ + 1]):
+                    if y + 2 <= self.n - 1 and not block[x_][y_ + 1]:
                         moves[5] = 1
-                    if (y - 2 >= 0 and not block[x_][y_ - 1]):
+                    if y - 2 >= 0 and not block[x_][y_ - 1]:
                         moves[6] = 1
             else:
                 moves[1] = 1
 
         # left
-        if (y > 0 and not block[x][y - 1]):
-            if (x == x_ and y - 2 == y_):
-                if (y - 4 >= 0 and not block[x][y - 3]):
+        if y > 0 and not block[x][y - 1]:
+            if x == x_ and y - 2 == y_:
+                if y - 4 >= 0 and not block[x][y - 3]:
                     moves[2] = 1
                 else:
-                    if (x - 2 >= 0 and not block[x_ - 1][y_]):
+                    if x - 2 >= 0 and not block[x_ - 1][y_]:
                         moves[4] = 1
-                    if (x + 2 <= self.n - 1 and not block[x_ + 1][y_]):
+                    if x + 2 <= self.n - 1 and not block[x_ + 1][y_]:
                         moves[6] = 1
             else:
                 moves[2] = 1
 
         # right
-        if (y < self.n - 1 and not block[x][y + 1]):
-            if (x == x_ and y + 2 == y_):
-                if (y + 4 <= self.n - 1 and not block[x][y + 3]):
+        if y < self.n - 1 and not block[x][y + 1]:
+            if x == x_ and y + 2 == y_:
+                if y + 4 <= self.n - 1 and not block[x][y + 3]:
                     moves[3] = 1
                 else:
-                    if (x - 2 >= 0 and not block[x_ - 1][y_]):
+                    if x - 2 >= 0 and not block[x_ - 1][y_]:
                         moves[7] = 1
                     if x + 2 <= self.n - 1 and not block[x_ + 1][y_]:
                         moves[5] = 1
@@ -106,7 +106,7 @@ class Board():
     def player_position(self, color):
         idx = 0 if color == 1 else 1
         pos = np.argmax(self.pieces[idx])
-        return (pos // self.n, pos % self.n)
+        return pos // self.n, pos % self.n
 
     def wall_moves_(self, color):
         idx = 2 if color == 1 else 3
@@ -162,16 +162,17 @@ class Board():
         return pool.map(is_wall_legal, moves)
 
     def is_wall_legal(self, move):
-        if move == None or move == [0]: return 0
-        if move == [1]: return 1
+        if move is None or move == [0]: return 0
+        if move == [1]:
+            return 1
         w, (x, y), block_ = move
         block = np.array(block_).reshape((self.n, self.n))
 
         # place the wall
         block[x][y] = 1
-        if (w == 8 and y + 2 < self.n):
+        if w == 8 and y + 2 < self.n:
             block[x][y + 2] = 1
-        elif (w == 9 and x - 2 >= 0):
+        elif w == 9 and x - 2 >= 0:
             block[x - 2][y] = 1
 
         # look for a path
@@ -207,29 +208,29 @@ class Board():
 
     def destination_cells_from(self, x, y, block, visited, parent, cells):
         # cells = []
-        if parent == None:  # minor optimization
-            if (x > 0 and not block[x - 1][y] and not visited[x - 2][y]):
+        if parent is None:  # minor optimization
+            if x > 0 and not block[x - 1][y] and not visited[x - 2][y]:
                 cells.append([x - 2, y])  # up
-            if (x < self.n - 1 and not block[x + 1][y] and not visited[x + 2][y]):
+            if x < self.n - 1 and not block[x + 1][y] and not visited[x + 2][y]:
                 cells.append([x + 2, y])  # down
-            if (y > 0 and not block[x][y - 1] and not visited[x][y - 2]):
+            if y > 0 and not block[x][y - 1] and not visited[x][y - 2]:
                 cells.append([x, y - 2])  # left
-            if (y < self.n - 1 and not block[x][y + 1] and not visited[x][y + 2]):
+            if y < self.n - 1 and not block[x][y + 1] and not visited[x][y + 2]:
                 cells.append([x, y + 2])  # right
             # return cells
             return
 
         parent_xy = str(x) + ',' + str(y)
-        if (x > 0 and not block[x - 1][y] and not visited[x - 2][y]):
+        if x > 0 and not block[x - 1][y] and not visited[x - 2][y]:
             cells.append([x - 2, y])  # up
             parent[str(x - 2) + ',' + str(y)] = parent_xy
-        if (x < self.n - 1 and not block[x + 1][y] and not visited[x + 2][y]):
+        if x < self.n - 1 and not block[x + 1][y] and not visited[x + 2][y]:
             cells.append([x + 2, y])  # down
             parent[str(x + 2) + ',' + str(y)] = parent_xy
-        if (y > 0 and not block[x][y - 1] and not visited[x][y - 2]):
+        if y > 0 and not block[x][y - 1] and not visited[x][y - 2]:
             cells.append([x, y - 2])  # left
             parent[str(x) + ',' + str(y - 2)] = parent_xy
-        if (y < self.n - 1 and not block[x][y + 1] and not visited[x][y + 2]):
+        if y < self.n - 1 and not block[x][y + 1] and not visited[x][y + 2]:
             cells.append([x, y + 2])  # right
             parent[str(x) + ',' + str(y + 2)] = parent_xy
         # return cells
@@ -265,33 +266,34 @@ class Board():
         a, (x, y) = self.action_from_index(move, color)
         # moving
         idx = 0 if color == 1 else 1
-        if (a < 8):
+        if a < 8:
             self.pieces[idx].fill(0)
             self.pieces[idx][x][y] = 1
             return
         # placing a wall
         idx = 2 if color == 1 else 3
-        if (a == 8):
+        if a == 8:
             self.pieces[idx][x][y] = 1
             self.pieces[idx][x][y + 2] = 1
-        if (a == 9):
+        if a == 9:
             self.pieces[idx][x][y] = 1
             self.pieces[idx][x - 2][y] = 1
 
     def index_of_action(self, a, x, y):
-        if (a < 8): return a  # 0 - 7
-        if (a == 8):
+        if a < 8:
+            return a  # 0 - 7
+        if a == 8:
             return 7 + (x / 2) * self.n_ + (y / 2) + 1  # 8 - 71
-        if (a == 9):
+        if a == 9:
             return 7 + (self.n_ ** 2) + (y + 1) / 2 + ((x / 2) - 1) * self.n_  # 72 - 135
 
     def action_from_index(self, index, color):
-        if (index < 8):
+        if index < 8:
             return self.move_action_destination(index, color)
-        if (7 < index < 8 + (self.n_ ** 2)):
+        if 7 < index < 8 + (self.n_ ** 2):
             c = index - 8
             return [8, [(c / self.n_) * 2 + 1, (c % self.n_) * 2]]
-        if (7 + (self.n_ ** 2) < index < 8 + 2 * (self.n_ ** 2)):
+        if 7 + (self.n_ ** 2) < index < 8 + 2 * (self.n_ ** 2):
             c = index - 8 - (self.n_ ** 2)
             return [9, [(c / self.n_) * 2 + 2, (c % self.n_) * 2 + 1]]
 
@@ -302,8 +304,8 @@ class Board():
         block = np.add(self.pieces[2], self.pieces[3])
 
         # up
-        if (action == 0):
-            if (x > 0 and not block[x - 1][y]):
+        if action == 0:
+            if x > 0 and not block[x - 1][y]:
                 if (x - 2 == x_ and y == y_):  # other player is blocking
                     if (x - 4 >= 0 and not block[x - 3][y]):
                         return ([0, [x - 4, y]])  # jump over
