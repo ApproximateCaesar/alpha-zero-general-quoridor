@@ -23,9 +23,13 @@ import Arena
 from MCTS import MCTS
 
 from othello.OthelloGame import OthelloGame
-from othello.OthelloPlayers import RandomPlayer
 from othello.pytorch.NNet import NNetWrapper as OthelloPytorchNNet
 from othello.keras.NNet import NNetWrapper as OthelloKerasNNet
+
+from quoridor.QuoridorGame import QuoridorGame
+from quoridor.QuoridorPlayers import RandomPlayer
+from quoridor.pytorch.NNet import NNetWrapper as QuoridorPytorchNNet
+
 
 import numpy as np
 from utils import *
@@ -49,6 +53,9 @@ class TestAllGames(unittest.TestCase):
 
     def test_othello_keras(self):
         self.execute_game_test(OthelloGame(6), OthelloKerasNNet)
+
+    def test_quoridor(self):
+        self.execute_game_test(QuoridorGame(5), QuoridorPytorchNNet)
 
 
 if __name__ == '__main__':
