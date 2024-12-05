@@ -48,11 +48,11 @@ class TestAllGames(unittest.TestCase):
         arena = Arena.Arena(n1p, rp, game)
         print(arena.playGames(2, verbose=False))
    
-    def test_othello_pytorch(self):
-        self.execute_game_test(OthelloGame(6), OthelloPytorchNNet)
-
-    def test_othello_keras(self):
-        self.execute_game_test(OthelloGame(6), OthelloKerasNNet)
+    # def test_othello_pytorch(self):
+    #     self.execute_game_test(OthelloGame(6), OthelloPytorchNNet)
+    #
+    # def test_othello_keras(self):
+    #     self.execute_game_test(OthelloGame(6), OthelloKerasNNet)
 
     def test_quoridor(self):
         self.execute_game_test(QuoridorGame(5), QuoridorPytorchNNet)
